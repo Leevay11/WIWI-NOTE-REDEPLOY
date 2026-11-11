@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#221a36">
+  <meta name="description" content="A little note for Wissal, from Leevay.">
+  <title>A little note for Wissal 💌</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #34283e;
+      --muted: #74667a;
+      --pink: #e95683;
+      --pink-dark: #c53d69;
+      --line: #eadde9;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100svh; margin: 0; display: grid; place-items: center;
+      padding: 24px; overflow-x: hidden; color: var(--ink);
+      background: linear-gradient(135deg, rgb(22 17 40 / 54%), rgb(33 23 49 / 42%)),
+        url("assets/background.png") 44% center / cover fixed no-repeat, #201b35;
+      font-family: ui-rounded, "Trebuchet MS", system-ui, sans-serif;
+    }
+    .intro-card, .card {
+      width: min(100%, 490px); padding: clamp(30px, 7vw, 50px) clamp(23px, 7vw, 46px) 34px;
+      border: 1px solid rgb(255 255 255 / 84%); border-radius: 30px;
+      background: rgb(255 251 253 / 94%); box-shadow: 0 24px 80px rgb(10 7 22 / 35%);
+      text-align: center; backdrop-filter: blur(12px);
+    }
+    .intro-card { animation: intro-arrive 1000ms cubic-bezier(.2,.8,.2,1) both; }
+    .intro-card.opening { animation: intro-out 900ms ease-in both; }
+    .intro-envelope { position: relative; width: 104px; height: 73px; margin: 0 auto 25px; border-radius: 12px; background: linear-gradient(145deg,#ffdbe5,#f4b8ce); box-shadow: 0 12px 26px rgb(197 61 105 / 20%); }
+    .intro-envelope::before { content: ""; position: absolute; z-index: 2; left: 0; top: 0; width: 0; height: 0; border-left: 52px solid transparent; border-right: 52px solid transparent; border-top: 43px solid #f6c2d4; transform-origin: top; transition: transform 550ms ease; }
+    .intro-envelope::after { content: "♥"; position: absolute; inset: 23px 0 auto; color: #c53d69; font-size: 24px; }
+    .opening .intro-envelope::before { transform: rotateX(180deg); }
+    .intro-kicker { margin: 0 0 12px; color: var(--pink-dark); font-size: 12px; font-weight: 800; letter-spacing: .17em; text-transform: uppercase; }
+    .intro-title { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(34px, 9vw, 48px); font-weight: 500; letter-spacing: -.045em; line-height: 1.08; }
+    .intro-copy { margin: 16px auto 23px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+    .open-button { min-width: 190px; min-height: 51px; color: white; background: var(--pink); box-shadow: 0 8px 22px rgb(201 56 103 / 28%); }
+    .open-button:hover { background: var(--pink-dark); transform: translateY(-2px); }
+    .browser-note { margin: 15px 0 0; color: #8f7d92; font-size: 11px; }
+    .card {
+      display: none; position: relative; animation: card-reveal 850ms cubic-bezier(.2,.8,.2,1) both;
+    }
+    .card.visible { display: block; }
+    .stamp {
+      width: 70px; height: 70px; display: grid; place-items: center; margin: 0 auto 19px;
+      border: 1px solid #ffe2e6; border-radius: 23px; background: #fff0f1; font-size: 34px;
+      transform: rotate(-5deg);
+    }
+    .eyebrow { margin: 0 0 10px; color: var(--pink-dark); font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(29px, 7.5vw, 40px); font-weight: 500; letter-spacing: -.045em; line-height: 1.12; }
+    .message { max-width: 340px; min-height: 50px; margin: 15px auto 21px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+    .progress { display: flex; justify-content: center; gap: 7px; margin: 0 auto 19px; }
+    .progress span { width: 7px; height: 7px; border-radius: 50%; background: #f2dfe3; transition: transform 180ms ease, background 180ms ease; }
+    .progress span.active { background: var(--pink); transform: scale(1.25); }
+    .actions { position: relative; min-height: 52px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 9px; }
+    button { min-width: 116px; min-height: 45px; padding: 0 17px; border: 0; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 750; cursor: pointer; transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease; }
+    button:focus-visible { outline: 3px solid #a34e6b; outline-offset: 4px; }
+    .yes { color: white; background: var(--pink); box-shadow: 0 7px 16px rgb(242 108 139 / 25%); }
+    .yes:hover { background: var(--pink-dark); transform: translateY(-2px); }
+    .no { min-width: 124px; min-height: 48px; color: white; border: 2px solid white; background: #a4265a; box-shadow: 0 7px 18px rgb(61 34 66 / 30%); }
+    .no:hover { background: #811d4b; transform: translateY(-2px); }
+    .no.is-escaping { position: fixed; z-index: 10; margin: 0; transition: left 250ms cubic-bezier(.2,.8,.2,1), top 250ms cubic-bezier(.2,.8,.2,1), transform 250ms ease; box-shadow: 0 10px 25px rgb(73 44 58 / 18%); }
+    .no.dodge-0 { transform: rotate(6deg) scale(1.06); }
+    .no.dodge-1 { transform: rotate(-8deg) scale(.96); }
+    .no.dodge-2 { transform: rotate(4deg) scale(1.08); }
+    .no.dodge-3 { transform: rotate(-5deg) scale(1); }
+    .hint { min-height: 18px; margin: 15px 0 0; color: #b49ba4; font-size: 11px; }
+    .footer { margin: 19px 0 0; color: #907c8e; font-size: 10px; }
+    .result { animation: arrive 450ms cubic-bezier(.2,.8,.2,1) both; }
+    .result .stamp { animation: bob 2s ease-in-out infinite; }
+    .music { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 9px 12px; margin: 22px 0 0; color: #725f78; font-size: 12px; }
+    .music-button { min-width: 110px; min-height: 36px; padding: 0 14px; color: #553852; border: 1px solid #ead7e2; background: #fff; font-size: 12px; }
+    .music-button:hover { background: #fff2f6; }
+    .volume-control { display: inline-flex; align-items: center; gap: 7px; color: #725f78; font-size: 11px; }
+    .volume-control input { width: 92px; accent-color: var(--pink); cursor: pointer; }
+    .volume-control output { min-width: 31px; color: #806d83; font-variant-numeric: tabular-nums; text-align: right; }
+    @keyframes intro-arrive { from { opacity: 0; transform: translateY(22px) scale(.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes intro-out { to { opacity: 0; transform: translateY(-14px) scale(.96); filter: blur(5px); } }
+    @keyframes card-reveal { from { opacity: 0; transform: translateY(24px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes arrive { from { opacity: 0; transform: translateY(10px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes bob { 50% { transform: translateY(-6px) rotate(4deg); } }
+    @media (max-width: 380px) { body { padding: 15px; background-attachment: scroll; } .intro-card, .card { padding-inline: 20px; } button { min-width: 102px; padding-inline: 12px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <section class="intro-card" id="intro" aria-labelledby="intro-title">
+    <div class="intro-envelope" aria-hidden="true"></div>
+    <p class="intro-kicker">A little something for Wissal</p>
+    <h1 class="intro-title" id="intro-title">A note from<br>Leevay 💌</h1>
+    <p class="intro-copy">A few honest questions, a little music, and all the time in the world.</p>
+    <button class="open-button" id="openNote" type="button">Open your little note ✨</button>
+    <p class="browser-note" id="musicStatus">The song will start with your note.</p>
+  </section>
+  <audio id="backgroundMusic" src="assets/ethereal.mp3" autoplay loop preload="auto"></audio>
+  <main class="card" id="card" aria-live="polite" aria-hidden="true">
+    <div id="questionStage">
+      <div class="stamp" aria-hidden="true">💌</div>
+      <p class="eyebrow" id="eyebrow">A favorite memory for Wissal</p>
+      <h1 id="question">Do you remember our first date?</h1>
+      <p class="message" id="message">9/08/2026 — Spider-Man: Brand New Day at the cinema. My favorite day ever, and the day I fell deeply in love with you. 💛</p>
+      <div class="progress" id="progress" aria-label="Question progress"></div>
+      <div class="actions" id="actions">
+        <button class="yes" data-answer="yes" type="button">Yeah, I do 💛</button>
+        <button class="no" data-answer="no" type="button">No 🙃</button>
+      </div>
+      <p class="hint" id="hint">Just between us—your answers stay on this page.</p>
+    </div>
+    <div class="music">
+      <span id="musicLabel">♫ Ethereal</span>
+      <button class="music-button" id="musicToggle" type="button" aria-label="Pause background music">Pause ♪</button>
+      <label class="volume-control" for="musicVolume">
+        <span>Volume</span>
+        <input id="musicVolume" type="range" min="0" max="100" value="25" aria-label="Music volume">
+        <output id="volumeValue" for="musicVolume">25%</output>
+      </label>
+    </div>
+    <p class="footer">with care, Leevay 💛</p>
+  </main>
+  <script>
+    const intro = document.querySelector('#intro');
+    const openNote = document.querySelector('#openNote');
+    const card = document.querySelector('#card');
+    const music = document.querySelector('#backgroundMusic');
+    const musicToggle = document.querySelector('#musicToggle');
+    const musicLabel = document.querySelector('#musicLabel');
+    const musicStatus = document.querySelector('#musicStatus');
+    const volumeSlider = document.querySelector('#musicVolume');
+    const volumeValue = document.querySelector('#volumeValue');
+    const questionStage = document.querySelector('#questionStage');
+    music.volume = Number(volumeSlider.value) / 100;
+    volumeSlider.addEventListener('input', () => {
+      music.volume = Number(volumeSlider.value) / 100;
+      volumeValue.value = `${volumeSlider.value}%`;
+      volumeValue.textContent = `${volumeSlider.value}%`;
+    });
+
+    function setMusicState(isPlaying) {
+      musicToggle.textContent = isPlaying ? 'Pause ♪' : 'Play ♪';
+      musicToggle.setAttribute('aria-label', isPlaying ? 'Pause background music' : 'Play background music');
+      musicLabel.textContent = isPlaying ? '♫ Ethereal is playing' : '♫ Ethereal';
+      if (!isPlaying) musicStatus.textContent = 'Tap Play if the song did not start.';
+    }
+
+    music.addEventListener('play', () => setMusicState(true));
+    music.addEventListener('pause', () => setMusicState(false));
+    musicToggle.addEventListener('click', async () => {
+      if (music.paused) {
+        try { await music.play(); } catch { musicStatus.textContent = 'This browser could not start the song.'; }
+      } else {
+        music.pause();
+      }
+    });
+
+    // Try autoplay first. If the browser blocks it, the intro button starts the song on a tap.
+    music.play().catch(() => {});
+    openNote.addEventListener('click', () => {
+      openNote.disabled = true;
+      music.play().catch(() => { musicStatus.textContent = 'Tap Play after opening to start the song.'; });
+      intro.classList.add('opening');
+      window.setTimeout(() => {
+        intro.hidden = true;
+        card.classList.add('visible');
+        card.setAttribute('aria-hidden', 'false');
+      }, 820);
+    });
+
+    const questions = [
+      { text: 'Do you remember our first date?', note: '9/08/2026 — Spider-Man: Brand New Day at the cinema. My favorite day ever, and the day I fell deeply in love with you. 💛' },
+      { text: 'Do you ever miss me?', note: 'The little moments count too. 🌷' },
+      { text: 'Do you still have love for me?', note: 'Whatever your answer, thank you for being honest.' },
+      { text: 'Do you ever think about us?', note: 'No wrong answers. No surprise follow-up exam. 🙂' },
+      { text: 'Would you be open to talking about us sometime?', note: 'Only if and when it feels right for you.' }
+    ];
+    const answers = [];
+    let current = 0;
+    let noEscapes = 0;
+    const maxNoEscapes = 4;
+    const question = document.querySelector('#question');
+    const message = document.querySelector('#message');
+    const eyebrow = document.querySelector('#eyebrow');
+    const progress = document.querySelector('#progress');
+    const actions = document.querySelector('#actions');
+    const hint = document.querySelector('#hint');
+    const noButton = document.querySelector('[data-answer="no"]');
+
+    function renderProgress() {
+      progress.replaceChildren(...questions.map((_, index) => {
+        const dot = document.createElement('span');
+        dot.classList.toggle('active', index === current);
+        dot.setAttribute('aria-hidden', 'true');
+        return dot;
+      }));
+      progress.setAttribute('aria-label', `Question ${current + 1} of ${questions.length}`);
+    }
+
+    function finish() {
+      const yesCount = answers.filter(answer => answer === 'yes').length;
+      const noCount = answers.filter(answer => answer === 'no').length;
+      const allYes = yesCount === questions.length;
+      const allNo = noCount === questions.length;
+      questionStage.innerHTML = allYes
+        ? '<div class="result"><div class="stamp" aria-hidden="true">🥹</div><p class="eyebrow">Thank you for being real with me</p><h1>That means a lot.</h1><p class="message">No rush to figure everything out. I’m grateful we can talk, and we can take things one honest conversation at a time. 💛</p><p class="footer">with care, Leevay</p></div>'
+        : allNo
+          ? '<div class="result"><div class="stamp" aria-hidden="true">🫶</div><p class="eyebrow">Thanks for answering</p><h1>I hear you, no pressure.</h1><p class="message">I respect where you’re at. I’m glad we can still talk, and you don’t owe me a different answer. Wishing you a lovely day. 🌷</p><p class="footer">with care, Leevay</p></div>'
+          : '<div class="result"><div class="stamp" aria-hidden="true">🌷</div><p class="eyebrow">Thank you for being honest</p><h1>I hear you.</h1><p class="message">It’s okay to have mixed feelings. No pressure to decide anything now. I’m glad you shared what felt true. 💛</p><p class="footer">with care, Leevay</p></div>';
+    }
+
+    actions.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-answer]');
+      if (!button) return;
+      answers.push(button.dataset.answer);
+      actions.querySelectorAll('button').forEach(option => { option.disabled = true; });
+      current += 1;
+      if (current >= questions.length) {
+        finish();
+        return;
+      }
+      noEscapes = 0;
+      noButton.classList.remove('is-escaping', 'dodge-0', 'dodge-1', 'dodge-2', 'dodge-3');
+      noButton.style.left = '';
+      noButton.style.top = '';
+      actions.querySelectorAll('button').forEach(option => { option.disabled = false; });
+      question.textContent = questions[current].text;
+      message.textContent = questions[current].note;
+      eyebrow.textContent = `Question ${current + 1} of ${questions.length}`;
+      hint.textContent = 'Just between us—your answers stay on this page.';
+      renderProgress();
+    });
+
+    noButton.addEventListener('pointerenter', (event) => {
+      if (event.pointerType !== 'mouse' || noEscapes >= maxNoEscapes || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      noEscapes += 1;
+      const margin = 12;
+      const maxLeft = Math.max(margin, window.innerWidth - noButton.offsetWidth - margin);
+      const maxTop = Math.max(margin, window.innerHeight - noButton.offsetHeight - margin);
+      noButton.classList.add('is-escaping');
+      noButton.classList.remove('dodge-0', 'dodge-1', 'dodge-2', 'dodge-3');
+      noButton.classList.add(`dodge-${(noEscapes - 1) % 4}`);
+      noButton.style.left = `${margin + Math.random() * (maxLeft - margin)}px`;
+      noButton.style.top = `${margin + Math.random() * (maxTop - margin)}px`;
+      hint.textContent = noEscapes === maxNoEscapes
+        ? 'You caught it! No is staying put now. 😄'
+        : `The No button escaped ${noEscapes} of ${maxNoEscapes} times. Catch it! 😄`;
+    });
+    renderProgress();
+  </script>
+</body>
+</html>
